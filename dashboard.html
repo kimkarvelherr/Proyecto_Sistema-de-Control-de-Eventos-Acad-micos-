@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+
+</head>
+
+<body>
+
+<script>
+
+if(!localStorage.getItem("token")){
+    window.location.href="/";
+}
+
+</script>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">Eventos Academicos</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">🏠 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/evento_html">📅 Eventos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/participante_html">👤 Participantes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/inscripcion_html">📝 Inscripciones</a></li>
+                <li class="nav-item"><a class="nav-link" href="/asistencia_html">✅ Asistencias</a></li>
+                <li class="nav-item"><a class="nav-link" href="/detalle_inscripciones_html">📋 Detalle Inscripciones</a></li>
+            </ul>
+            <button class="btn btn-outline-light" onclick="logout()">🚪 Cerrar Sesión</button>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+
+<div class="topbar">
+
+<h3>
+Panel Administrativo
+</h3>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-3">
+
+<div class="card-dashboard bg-evento">
+
+<h5>Eventos</h5>
+
+<h2>📅 <span id="countEventos">0</span></h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card-dashboard bg-participante">
+
+<h5>Participantes</h5>
+
+<h2>👤 <span id="countParticipantes">0</span></h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card-dashboard bg-inscripcion">
+
+<h5>Inscripciones</h5>
+
+
+<h2>📝 <span id="countInscripciones">0</span></h2>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="card-dashboard bg-asistencia">
+
+<h5>Asistencias</h5>
+
+
+<h2>✅ <span id="countAsistencias">0</span></h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="tabla-contenedor mt-4 text-center">
+
+<h4>
+Bienvenido al Sistema de Gestión de Eventos Académicos
+</h4>
+
+<p class="mb-0">
+Utilice el menú para administrar: Eventos, Participantes, Inscripciones y Asistencias.
+</p>
+
+</div>
+
+</div>
+
+<script>
+
+function logout(){
+
+    localStorage.removeItem("token");
+
+    window.location.href="/";
+
+}
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</script>
+<script>
+async function cargarContadores(){
+    try{
+        const endpoints = ['/evento','/participante','/inscripcion','/asistencia'];
+        const responses = await Promise.all(endpoints.map(u => fetch(u)));
+        const datas = await Promise.all(responses.map(r => r.ok ? r.json() : []));
+
+        const eventos = Array.isArray(datas[0]) ? datas[0].length : 0;
+        const participantes = Array.isArray(datas[1]) ? datas[1].length : 0;
+        const inscripciones = Array.isArray(datas[2]) ? datas[2].length : 0;
+        const asistencias = Array.isArray(datas[3]) ? datas[3].length : 0;
+
+        document.getElementById('countEventos').innerText = eventos;
+        document.getElementById('countParticipantes').innerText = participantes;
+        document.getElementById('countInscripciones').innerText = inscripciones;
+        document.getElementById('countAsistencias').innerText = asistencias;
+    }catch(err){
+        console.error('Error cargando contadores', err);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', cargarContadores);
+</script>
+
+</body>
+</html>
