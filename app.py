@@ -385,5 +385,168 @@ def detalle_inscripciones():
 
     return jsonify(detalle), 200
 
+# ------------------------------
+# ENDPOINTS PUT 
+#------------------------------
+#### PUT PARTICIPANTE ######
+@app.route('/asistencia/<int:id_asistencia>', methods=['PUT'])
+@jwt_required()
+def modificar_asistencia(id_asistencia):
+    data = request.get_json()
+    id_participante = data.get("id_participante")
+    id_evento = data.get("id_evento")
+    fecha_registro = data.get("fecha_registro")
+    asistio = data.get("asistio")
+    
+    conexion = getConexion()
+    cursor = conexion.cursor()
+    sql = "UPDATE asistencia SET id_participante=%s,id_evento=%s,fecha_registro=%s,asistio=%s WHERE id_asistencia=%s"
+    cursor.execute(sql, (id_participante, id_evento, fecha_registro, asistio, id_asistencia))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return jsonify({"mensaje": f"Asistencia modificada"}), 200
+
+#### PUT EVENTO ######
+@app.route('/evento/<int:id_evento>', methods=['PUT'])
+@jwt_required()
+def modificar_evento(id_evento):
+    data = request.get_json()
+    nombre = data.get("nombre")
+    descripcion = data.get("descripcion")
+    fecha = data.get("fecha")
+    hora = data.get("hora")
+    lugar = data.get("lugar")
+    tipo_evento = data.get("tipo_evento")
+    capacidad = data.get("capacidad")
+    
+    conexion = getConexion()
+    cursor = conexion.cursor()
+    sql = "UPDATE evento SET nombre=%s, descripcion=%s, fecha=%s, hora=%s, lugar=%s, tipo_evento=%s, capacidad=%s WHERE id_evento=%s"
+    cursor.execute(sql, (nombre, descripcion, fecha, hora, lugar, tipo_evento, capacidad, id_evento))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    
+    return jsonify({"mensaje": "Evento modificado"}), 200
+
+#### PUT INSCRIPCION ######
+@app.route('/inscripcion/<int:id_inscripcion>', methods=['PUT'])
+@jwt_required()
+def modificar_inscripcion(id_inscripcion):
+    data = request.get_json()
+    id_participante = data.get("id_participante")
+    id_evento = data.get("id_evento")
+    fecha_inscripcion = data.get("fecha_inscripcion")
+    estado = data.get("estado")
+    
+    conexion = getConexion()
+    cursor = conexion.cursor()
+    sql = "UPDATE inscripcion SET id_participante=%s, id_evento=%s, fecha_inscripcion=%s, estado=%s WHERE id_inscripcion=%s"
+    cursor.execute(sql, (id_participante,id_evento,fecha_inscripcion,estado ,id_inscripcion,))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    
+    return jsonify({"mensaje": "Evento modificado"}), 200
+
+
+#### PUT PARTICIPANTE ######
+@app.route('/participante/<int:id_participante>', methods=['PUT'])
+@jwt_required()
+def modificar_participante(id_participante):
+    data = request.get_json()
+    nombres = data.get("nombres")
+    apellidos = data.get("apellidos")
+    correo = data.get("correo")
+    telefono = data.get("telefono")
+    institucion = data.get("institucion")
+    
+    conexion = getConexion()
+    cursor = conexion.cursor()
+    sql = "UPDATE participante SET nombres=%s, apellidos=%s, correo=%s, telefono=%s, institucion=%s WHERE id_participante=%s"
+    cursor.execute(sql, (nombres,apellidos,correo,telefono,institucion,id_participante))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    
+    return jsonify({"mensaje": "Participante modificado"}), 200
+
+#------------------------------
+# DELETE ASISTENCIA
+#------------------------------
+
+#### DELETE ASISTENCIA ######
+@app.route('/asistencia/<int:id_asistencia>',methods=['DELETE'])
+@jwt_required()
+def eliminar_asistencia(id_asistencia):
+    conexion = getConexion()
+    cursor = conexion.cursor()
+
+    sql = "DELETE FROM asistencia WHERE id_asistencia=%s"
+    cursor.execute(sql, (id_asistencia,))
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": f"asistencia eliminada"}), 200
+
+
+######### DELETE EVENTO ############
+
+@app.route('/evento/<int:id_evento>',methods=['DELETE'])
+@jwt_required()
+def eliminar_evento(id_evento):
+    conexion = getConexion()
+    cursor = conexion.cursor()
+
+    sql = "DELETE FROM evento WHERE id_evento=%s"
+    cursor.execute(sql, (id_evento,))
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": f"evento eliminado"}), 200
+
+
+############### DELETE INSCRIPCION  #################
+
+
+@app.route('/inscripcion/<int:id_inscripcion>',methods=['DELETE'])
+@jwt_required()
+def eliminar_inscripcion(id_inscripcion):
+    conexion = getConexion()
+    cursor = conexion.cursor()
+
+    sql = "DELETE FROM inscripcion WHERE id_inscripcion=%s"
+    cursor.execute(sql, (id_inscripcion,))
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": f"inscripcion eliminada"}), 200
+
+############# DELETE PARTICIPANTE ##############
+
+@app.route('/participante/<int:id_participante>',methods=['DELETE'])
+@jwt_required()
+def eliminar_participante(id_participante):
+    conexion = getConexion()
+    cursor = conexion.cursor()
+
+    sql = "DELETE FROM participante WHERE id_participante=%s"
+    cursor.execute(sql, (id_participante,))
+
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+
+    return jsonify({"mensaje": f"participante eliminado"}), 200
+
+
+
 if __name__ == "__main__":
     app.run(debug=True)
