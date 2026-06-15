@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Inscripciones</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/estilos.css') }}">
+
+</head>
+
+<body>
+
+<script>
+if(!localStorage.getItem("token")){
+    window.location.href="/";
+}
+</script>
+
+<div class="sidebar">
+
+    <h2>Eventos</h2>
+
+    <a href="/dashboard">🏠 Dashboard</a>
+    <a href="/evento_html">📅 Eventos</a>
+    <a href="/participante_html">👤 Participantes</a>
+    <a href="/inscripcion_html">📝 Inscripciones</a>
+    <a href="/asistencia_html">✅ Asistencias</a>
+    <a href="/detalle_inscripciones_html">📋 Detalle Inscripciones</a>
+
+</div>
+
+<div class="content">
+
+<div class="topbar">
+    <h3>Gestión de Inscripciones</h3>
+</div>
+
+<div class="tabla-contenedor">
+
+<div class="d-flex justify-content-between mb-3">
+
+<h4>Listado de Inscripciones</h4>
+
+<button class="btn btn-success"
+onclick="mostrarFormulario()">
+➕ Registrar Inscripción
+</button>
+
+</div>
+
+<div class="card mb-4"
+id="formularioInscripcion"
+style="display:none;">
+
+<div class="card-header">
+Nueva Inscripción
+</div>
+
+<div class="card-body">
+
+<input type="number"
+id="id_participante"
+class="form-control mb-2"
+placeholder="ID Participante">
+
+<input type="number"
+id="id_evento"
+class="form-control mb-2"
+placeholder="ID Evento">
+
+<input type="date"
+id="fecha_inscripcion"
+class="form-control mb-2">
+
+<input type="text"
+id="estado"
+class="form-control mb-2"
+placeholder="Estado">
+
+<button class="btn btn-success"
+onclick="guardarInscripcion()">
+Guardar
+</button>
+
+<button class="btn btn-secondary"
+onclick="ocultarFormulario()">
+Cancelar
+</button>
+
+</div>
+
+</div>
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-dark">
+
+<tr>
+<th>ID</th>
+<th>ID Participante</th>
+<th>ID Evento</th>
+<th>Fecha</th>
+<th>Estado</th>
+<th>Acciones</th>
+</tr>
+
+</thead>
+
+<tbody id="tablaInscripciones"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+const token = localStorage.getItem("token");
+
+function mostrarFormulario(){
+    document.getElementById("formularioInscripcion").style.display="block";
+}
+
+function ocultarFormulario(){
+    document.getElementById("formularioInscripcion").style.display="none";
+}
+
+async function listarInscripciones(){
+
+    const response = await fetch("/inscripcion");
+
+    const data = await response.json();
+
+    let filas = "";
+
+    if(Array.isArray(data)){
+
+        data.forEach(inscripcion=>{
+
+            filas += `
+            <tr>
+
+            <td>${inscripcion.id_inscripcion}</td>
+            <td>${inscripcion.id_participante}</td>
+            <td>${inscripcion.id_evento}</td>
+            <td>${inscripcion.fecha_inscripcion}</td>
+            <td>${inscripcion.estado}</td>
+
+            <td>
+
+            <button
+            class="btn btn-warning btn-sm"
+            onclick="editarInscripcion(${inscripcion.id_inscripcion})">
+            Editar
+            </button>
+
+            <button
+            class="btn btn-danger btn-sm"
+            onclick="eliminarInscripcion(${inscripcion.id_inscripcion})">
+            Eliminar
+            </button>
+
+            </td>
+
+            </tr>
+            `;
+        });
+    }
+
+    document.getElementById("tablaInscripciones").innerHTML = filas;
+}
+
+async function guardarInscripcion(){
+
+    const response = await fetch("/inscripcion",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+token
+        },
+
+        body:JSON.stringify({
+
+            id_participante:document.getElementById("id_participante").value,
+            id_evento:document.getElementById("id_evento").value,
+            fecha_inscripcion:document.getElementById("fecha_inscripcion").value,
+            estado:document.getElementById("estado").value
+
+        })
+
+    });
+
+    const data = await response.json();
+
+    alert(data.mensaje);
+
+    ocultarFormulario();
+
+    listarInscripciones();
+}
+
+async function editarInscripcion(id){
+
+    const id_participante = prompt("ID Participante:");
+    if(id_participante == null) return;
+
+    const id_evento = prompt("ID Evento:");
+    if(id_evento == null) return;
+
+    const fecha_inscripcion = prompt("Fecha (YYYY-MM-DD):");
+    if(fecha_inscripcion == null) return;
+
+    const estado = prompt("Estado:");
+    if(estado == null) return;
+
+    const response = await fetch(`/inscripcion/${id}`,{
+
+        method:"PUT",
+
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " + token
+        },
+
+        body:JSON.stringify({
+            id_participante:id_participante,
+            id_evento:id_evento,
+            fecha_inscripcion:fecha_inscripcion,
+            estado:estado
+        })
+
+    });
+
+    const data = await response.json();
+
+    alert(data.mensaje);
+
+    listarInscripciones();
+}
+
+async function eliminarInscripcion(id){
+
+    if(!confirm("¿Eliminar inscripción?")){
+        return;
+    }
+
+    const response = await fetch(`/inscripcion/${id}`,{
+
+        method:"DELETE",
+
+        headers:{
+            "Authorization":"Bearer "+token
+        }
+
+    });
+
+    const data = await response.json();
+
+    alert(data.mensaje);
+
+    listarInscripciones();
+}
+
+listarInscripciones();
+
+</script>
+
+</body>
+</html>
