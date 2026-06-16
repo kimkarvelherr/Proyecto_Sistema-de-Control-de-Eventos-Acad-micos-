@@ -20,18 +20,25 @@ if(!localStorage.getItem("token")){
 }
 </script>
 
-<div class="sidebar">
-
-    <h2>Eventos</h2>
-
-    <a href="/dashboard">🏠 Dashboard</a>
-    <a href="/evento_html">📅 Eventos</a>
-    <a href="/participante_html">👤 Participantes</a>
-    <a href="/inscripcion_html">📝 Inscripciones</a>
-    <a href="/asistencia_html">✅ Asistencias</a>
-    <a href="/detalle_inscripciones_html">📋 Detalle Inscripciones</a>
-
-</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">Eventos Academicos</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/dashboard">🏠 Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/evento_html">📅 Eventos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/participante_html">👤 Participantes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/inscripcion_html">📝 Inscripciones</a></li>
+                <li class="nav-item"><a class="nav-link" href="/asistencia_html">✅ Asistencias</a></li>
+                <li class="nav-item"><a class="nav-link" href="/detalle_inscripciones_html">📋 Detalle Inscripciones</a></li>
+            </ul>
+            <button class="btn btn-outline-light" onclick="logout()">🚪 Cerrar Sesión</button>
+        </div>
+    </div>
+</nav>
 
 <div class="content">
 
