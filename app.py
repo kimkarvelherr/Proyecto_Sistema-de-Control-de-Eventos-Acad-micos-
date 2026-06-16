@@ -44,7 +44,7 @@ def asistencia_html():
 
 @app.route('/detalle_inscripciones_html')
 def detalle_inscripciones_html():
-    return render_template('detalle_inscripciones.html')
+    return render_template('detalleinscripciones.html')
 
 
 @app.route('/testdb')
@@ -302,45 +302,6 @@ def insertar_participante():
     conexion.close()
     return jsonify({"mensaje": "Participante registrada con éxito!"}), 201
 
-@app.route('/detalle_inscripciones', methods=['GET'])
-@jwt_required()
-def detalle_inscripciones():
-
-    conexion = getConexion()
-    cursor = conexion.cursor()
-
-    sql = """
-    SELECT
-        p.nombres,
-        p.apellidos,
-        e.nombre,
-        i.fecha_inscripcion,
-        i.estado
-    FROM inscripcion i
-    INNER JOIN participante p
-        ON i.id_participante = p.id_participante
-    INNER JOIN evento e
-        ON i.id_evento = e.id_evento
-    """
-
-    cursor.execute(sql)
-    datos = cursor.fetchall()
-
-    detalle = []
-
-    for fila in datos:
-        detalle.append({
-            "participante": f"{fila[0]} {fila[1]}",
-            "evento": fila[2],
-            "fecha_inscripcion": str(fila[3]),
-            "estado": fila[4]
-        })
-
-    cursor.close()
-    conexion.close()
-
-    return jsonify(detalle), 200
-
 #------------------------------
 # EJERCICIO PROPUESTO 
 #------------------------------
@@ -513,7 +474,6 @@ def eliminar_evento(id_evento):
 
 ############### DELETE INSCRIPCION  #################
 
-
 @app.route('/inscripcion/<int:id_inscripcion>',methods=['DELETE'])
 @jwt_required()
 def eliminar_inscripcion(id_inscripcion):
@@ -545,8 +505,6 @@ def eliminar_participante(id_participante):
     conexion.close()
 
     return jsonify({"mensaje": f"participante eliminado"}), 200
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
